@@ -1,0 +1,62 @@
+log("Select Next Layer ——————————")
+
+if([selection count] == 0){  // nothing is selected, error
+	[doc showMessage:"Select one or more layers to cycle through."]
+
+} else if([selection count] == 1){
+	//log("selecting siblings")
+	var thecomps = [[[selection objectAtIndex:0] parentGroup] layers] //get siblings
+	selectNextLayer(thecomps)
+	/* //debug what's in the selection?
+	var loop = [thecomps objectEnumerator]
+	var j = 0
+	while (item = [loop nextObject]) {
+		log(j)
+		log([item name])
+		log([item class])
+		j = j+1
+	}*/
+
+} else {  //cycle through selected layers
+	//log("Cycle through…")
+	var thecomps = selection
+	selectNextLayer(thecomps)
+	}
+
+
+function selectNextLayer (layers) {
+// makes sure only one layer is selected, and selects the next one.
+// TODO: check and deselect siblings for single-selection too.
+log([thecomps count])
+log([thecomps class])
+
+var count = 0
+var visibleLayers = []
+
+for (var i=0; i < [selection count]; i++){
+	var item = selection[i]
+	if([item isVisible]){
+		count = count + 1
+		visibleLayers.push(i)
+	}
+}
+
+var last = ([thecomps count] -1)
+
+if(count == 1){
+	var theLayer = visibleLayers[0]
+	log(theLayer)
+	[[thecomps objectAtIndex:theLayer] setIsVisible:false] //hide this one
+	if(theLayer == 0){ //if it's the "first" one
+		[[thecomps objectAtIndex:last] setIsVisible:true] //show the "last"
+		} else { //show the "next"
+		[[thecomps objectAtIndex:(theLayer -1)] setIsVisible:true]
+		}
+	} else {
+		for (var i=0; i < [selection count]; i++){ //deselect all
+			var item = selection[i]
+			[item setIsVisible:false]
+		}
+		[[thecomps objectAtIndex:last] setIsVisible:true] //select one
+	}
+}
